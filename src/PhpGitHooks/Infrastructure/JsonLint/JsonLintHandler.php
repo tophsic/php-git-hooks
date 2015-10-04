@@ -7,7 +7,11 @@ use PhpGitHooks\Infrastructure\Common\RecursiveToolInterface;
 use PhpGitHooks\Infrastructure\Common\ToolHandler;
 use Symfony\Component\Process\ProcessBuilder;
 
-final class JsonLintHandler extends ToolHandler implements RecursiveToolInterface
+if (!defined('PHPGITHOOKS_BIN_DIR')) {
+    define('PHPGITHOOKS_BIN_DIR', 'bin');
+}
+
+class JsonLintHandler extends ToolHandler implements RecursiveToolInterface
 {
     /** @var array  */
     private $files = [];

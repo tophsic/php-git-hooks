@@ -22,8 +22,8 @@
         <service id="hook.file.copier" class="PhpGitHooks\Infrastructure\Git\HooksFileCopier">
         </service>
         <service id="check.composer.files.pre.commit.executor" class="PhpGitHooks\Application\Composer\CheckComposerFilesPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="composer.files.validator"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="composer.files.validator" class="PhpGitHooks\Application\Composer\ComposerFilesValidator">
             <argument type="service" id="output.handler" />
@@ -31,8 +31,8 @@
         <service id="output.handler" class="PhpGitHooks\Command\OutputHandler">
         </service>
         <service id="check.php.syntax.lint.pre.commit.executor" class="PhpGitHooks\Application\PhpLint\CheckPhpSyntaxLintPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="php.lint.handler"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="pre.commit.config" class="PhpGitHooks\Application\Config\PreCommitConfig">
             <argument type="service" id="config.file.reader" />
@@ -41,30 +41,30 @@
             <argument type="service" id="output.handler" />
         </service>
         <service id="fix.code.style.cs.fixer.pre.commit.executor" class="PhpGitHooks\Application\PhpCsFixer\FixCodeStyleCsFixerPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="php.cs.fixer.handler"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="php.cs.fixer.handler" class="PhpGitHooks\Infrastructure\PhpCsFixer\PhpCsFixerHandler">
             <argument type="service" id="output.handler" />
         </service>
         <service id="check.code.style.code.sniffer.pre.commit.executor" class="PhpGitHooks\Application\CodeSniffer\CheckCodeStyleCodeSnifferPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="code.sniffer.handler"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="code.sniffer.handler" class="PhpGitHooks\Infrastructure\CodeSniffer\CodeSnifferHandler">
             <argument type="service" id="output.handler" />
         </service>
         <service id="check.php.mess.detection.pre.commit.executor" class="PhpGitHooks\Application\PhpMD\CheckPhpMessDetectionPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="phpmd.handler"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="phpmd.handler" class="PhpGitHooks\Infrastructure\PhpMD\PhpMDHandler">
             <argument type="service" id="output.handler" />
         </service>
         <service id="unit.test.pre.commit.executor" class="PhpGitHooks\Application\PhpUnit\UnitTestPreCommitExecutor">
-            <argument type="service" id="pre.commit.config"/>
             <argument type="service" id="phpunit.handler"/>
             <argument type="service" id="phpunit.randomizer.handler"/>
+            <argument type="service" id="pre.commit.config"/>
         </service>
         <service id="phpunit.handler" class="PhpGitHooks\Application\PhpUnit\PhpUnitHandler">
             <argument type="service" id="output.handler" />

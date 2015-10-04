@@ -20,10 +20,13 @@ class CheckCodeStyleCodeSnifferPreCommitExecutor extends PreCommitExecutor
      * @param HookConfigInterface $preCommitConfig
      * @param CodeSnifferHandler  $codeSnifferHandler
      */
-    public function __construct(HookConfigInterface $preCommitConfig, CodeSnifferHandler $codeSnifferHandler)
+    public function __construct(
+        CodeSnifferHandler $codeSnifferHandler,
+        HookConfigInterface $preCommitConfig
+    )
     {
-        $this->preCommitConfig = $preCommitConfig;
         $this->codeSnifferHandler = $codeSnifferHandler;
+        $this->preCommitConfig = $preCommitConfig;
     }
 
     /**

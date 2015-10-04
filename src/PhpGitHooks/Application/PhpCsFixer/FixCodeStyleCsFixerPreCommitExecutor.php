@@ -18,11 +18,11 @@ class FixCodeStyleCsFixerPreCommitExecutor extends PreCommitExecutor
      * @param InteractiveToolInterface     $toolHandlerInterface
      */
     public function __construct(
-        HookConfigExtraToolInterface $hookConfigInterface,
-        InteractiveToolInterface $toolHandlerInterface
+        InteractiveToolInterface $toolHandlerInterface,
+        HookConfigExtraToolInterface $hookConfigInterface
     ) {
-        $this->preCommitConfig = $hookConfigInterface;
         $this->phpCsFixerHandler = $toolHandlerInterface;
+        $this->preCommitConfig = $hookConfigInterface;
     }
 
     /**

@@ -5,7 +5,7 @@ namespace PhpGitHooks\Tests\Application\PhpLint;
 use PhpGitHooks\Application\PhpLint\CheckPhpSyntaxLintPreCommitExecutor;
 use PhpGitHooks\Infrastructure\Component\InMemoryOutputInterface;
 use PhpGitHooks\Infrastructure\Config\InMemoryHookConfig;
-use PhpGitHooks\Infrastructure\PhpLint\InMemoryPhpLintHandler;
+use PhpGitHooks\Infrastructure\PhpLint\PhpLintHandler;
 
 /**
  * Class CheckPhpSyntaxLintPreCommitExecutorTest.
@@ -14,7 +14,7 @@ class CheckPhpSyntaxLintPreCommitExecutorTest extends \PHPUnit_Framework_TestCas
 {
     /** @var  CheckPhpSyntaxLintPreCommitExecutor */
     private $checkPhpSyntaxLintPreCommitExecutor;
-    /** @var  InMemoryPhpLintHandler */
+    /** @var  Mock */
     private $phpLintHandler;
     /** @var  InMemoryHookConfig */
     private $preCommitConfig;
@@ -23,22 +23,27 @@ class CheckPhpSyntaxLintPreCommitExecutorTest extends \PHPUnit_Framework_TestCas
 
     protected function setUp()
     {
-        $this->phpLintHandler = new InMemoryPhpLintHandler();
         $this->preCommitConfig = new InMemoryHookConfig();
         $this->outputInterface = new InMemoryOutputInterface();
-
-        $this->checkPhpSyntaxLintPreCommitExecutor = new CheckPhpSyntaxLintPreCommitExecutor(
-            $this->preCommitConfig,
-            $this->phpLintHandler
-        );
     }
 
     /**
      * @test
      */
-    public function toolIsDissabled()
+    public function isEnabled()
     {
-        $this->preCommitConfig->setEnabled(false);
+        $this->preCommitConfig->setEnabled(true);
+
+        $this->phpLintHandler = \Mockery::mock(PhpLintHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->once()
+            ->mock();
+
+        $this->checkPhpSyntaxLintPreCommitExecutor = new CheckPhpSyntaxLintPreCommitExecutor(
+            $this->phpLintHandler,
+            $this->preCommitConfig
+        );
 
         $this->checkPhpSyntaxLintPreCommitExecutor->run($this->outputInterface, array());
     }
@@ -46,9 +51,20 @@ class CheckPhpSyntaxLintPreCommitExecutorTest extends \PHPUnit_Framework_TestCas
     /**
      * @test
      */
-    public function toolIsEnabled()
+    public function isDisabled()
     {
-        $this->preCommitConfig->setEnabled(true);
+        $this->preCommitConfig->setEnabled(false);
+
+        $this->phpLintHandler = \Mockery::mock(PhpLintHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->never()
+            ->mock();
+
+        $this->checkPhpSyntaxLintPreCommitExecutor = new CheckPhpSyntaxLintPreCommitExecutor(
+            $this->phpLintHandler,
+            $this->preCommitConfig
+        );
 
         $this->checkPhpSyntaxLintPreCommitExecutor->run($this->outputInterface, array());
     }

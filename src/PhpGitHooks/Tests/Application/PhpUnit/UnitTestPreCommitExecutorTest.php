@@ -45,16 +45,18 @@ class UnitTestPreCommitExecutorTest extends \PHPUnit_Framework_TestCase
         $this->outputHandler = new InMemoryOutputHandler();
         $this->phpunitProcessBuilder = \Mockery::mock(PhpUnitProcessBuilder::class);
         $this->phpunitRandomizerBuilder = \Mockery::mock(PhpUnitRandomizerHandler::class);
+
         $this->processBuilder = \Mockery::mock(ProcessBuilder::class);
         $this->process = \Mockery::mock(Process::class);
         $this->process->shouldReceive('run')->andReturn(1);
         $this->process->shouldReceive('stop');
 
         $this->phpUnitHandler = new PhpUnitHandler($this->outputHandler, $this->phpunitProcessBuilder);
+
         $this->unitTestPreCommitExecutor = new UnitTestPreCommitExecutor(
-            $this->preCommitConfig,
             $this->phpUnitHandler,
-            $this->phpunitRandomizerBuilder
+            $this->phpunitRandomizerBuilder,
+            $this->preCommitConfig
         );
     }
 
@@ -64,6 +66,17 @@ class UnitTestPreCommitExecutorTest extends \PHPUnit_Framework_TestCase
     public function isDisabled()
     {
         $this->preCommitConfig->setExtraOptions(['enabled' => false]);
+
+        $this->processBuilder = \Mockery::mock(ProcessBuilder::class);
+
+        $this->phpUnitHandler = \Mockery::mock(PhpUnitHandler::class);
+        $this->phpUnitHandler->shouldReceive('run')->never();
+
+        $this->unitTestPreCommitExecutor = new UnitTestPreCommitExecutor(
+            $this->phpUnitHandler,
+            $this->phpunitRandomizerBuilder,
+            $this->preCommitConfig
+        );
 
         $this->unitTestPreCommitExecutor->run($this->outputInterface);
     }

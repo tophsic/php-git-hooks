@@ -16,12 +16,12 @@ class CheckComposerFilesPreCommitExecutor extends PreCommitExecutor
      * @param FilesValidatorInterface $composerFilesValidator
      */
     public function __construct(
-        HookConfigInterface $hookConfigInterface,
-        FilesValidatorInterface $composerFilesValidator
+        FilesValidatorInterface $composerFilesValidator,
+        HookConfigInterface $hookConfigInterface
     )
     {
-        $this->preCommitConfig = $hookConfigInterface;
         $this->composerFilesValidator = $composerFilesValidator;
+        $this->preCommitConfig = $hookConfigInterface;
     }
 
     /**

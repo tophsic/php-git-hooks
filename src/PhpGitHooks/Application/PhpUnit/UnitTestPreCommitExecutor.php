@@ -20,13 +20,13 @@ class UnitTestPreCommitExecutor extends PreCommitExecutor
      * @param PhpUnitRandomizerHandler $phpUnitRandomizerHandler
      */
     public function __construct(
-        HookConfigInterface $hookConfigInterface,
         PhpUnitHandler $phpUnitHandler,
-        PhpUnitRandomizerHandler $phpUnitRandomizerHandler
+        PhpUnitRandomizerHandler $phpUnitRandomizerHandler,
+        HookConfigInterface $hookConfigInterface
     ) {
-        $this->preCommitConfig = $hookConfigInterface;
         $this->phpunitHandler = $phpUnitHandler;
         $this->phpUnitRandomizerHandler = $phpUnitRandomizerHandler;
+        $this->preCommitConfig = $hookConfigInterface;
     }
 
     /**

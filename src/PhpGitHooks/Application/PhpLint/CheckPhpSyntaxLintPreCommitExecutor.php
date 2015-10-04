@@ -21,11 +21,11 @@ class CheckPhpSyntaxLintPreCommitExecutor extends PreCommitExecutor
      * @param FilesToolHandlerInterface $filesToolHandlerInterface
      */
     public function __construct(
-        HookConfigInterface $hookConfigInterface,
-        FilesToolHandlerInterface $filesToolHandlerInterface
+        FilesToolHandlerInterface $filesToolHandlerInterface,
+        HookConfigInterface $hookConfigInterface
     ) {
-        $this->preCommitConfig = $hookConfigInterface;
         $this->phpLintHandler = $filesToolHandlerInterface;
+        $this->preCommitConfig = $hookConfigInterface;
     }
 
     /**

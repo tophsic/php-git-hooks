@@ -22,8 +22,8 @@ class CheckPhpMessDetectionPreCommitExecutor extends PreCommitExecutor
      * @param RecursiveToolInterface $recursiveToolInterface
      */
     public function __construct(
-        HookConfigInterface $hookConfigInterface,
-        RecursiveToolInterface $recursiveToolInterface
+        RecursiveToolInterface $recursiveToolInterface,
+        HookConfigInterface $hookConfigInterface
     ) {
         $this->phpMDHandler = $recursiveToolInterface;
         $this->preCommitConfig = $hookConfigInterface;

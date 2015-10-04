@@ -6,7 +6,7 @@ use PhpGitHooks\Application\CodeSniffer\CheckCodeStyleCodeSnifferPreCommitExecut
 use PhpGitHooks\Application\PhpMD\CheckPhpMessDetectionPreCommitExecutor;
 use PhpGitHooks\Infrastructure\Component\InMemoryOutputInterface;
 use PhpGitHooks\Infrastructure\Config\InMemoryHookConfig;
-use PhpGitHooks\Infrastructure\PhpMD\InMemoryPhpMDHandler;
+use PhpGitHooks\Infrastructure\PhpMD\PhpMDHandler;
 
 /**
  * Class CheckPhpMessDetectionPreCommitExecutorTest.
@@ -17,7 +17,7 @@ class CheckPhpMessDetectionPreCommitExecutorTest extends \PHPUnit_Framework_Test
     private $checkPhpMessDetectionPreCommitExecutor;
     /** @var  InMemoryHookConfig */
     private $preCommitConfig;
-    /** @var   InMemoryPhpMDHandler */
+    /** @var   Mock */
     private $phpMDHandler;
     /** @var  InMemoryOutputInterface */
     private $outputInterface;
@@ -25,20 +25,27 @@ class CheckPhpMessDetectionPreCommitExecutorTest extends \PHPUnit_Framework_Test
     protected function setUp()
     {
         $this->preCommitConfig = new InMemoryHookConfig();
-        $this->phpMDHandler = new InMemoryPhpMDHandler();
         $this->outputInterface = new InMemoryOutputInterface();
-        $this->checkPhpMessDetectionPreCommitExecutor = new CheckPhpMessDetectionPreCommitExecutor(
-            $this->preCommitConfig,
-            $this->phpMDHandler
-        );
     }
 
     /**
      * @test
      */
-    public function isDisabled()
+    public function isEnabled()
     {
-        $this->preCommitConfig->setEnabled(false);
+        $this->preCommitConfig->setEnabled(true);
+
+        $this->phpMDHandler = \Mockery::mock(PhpMDHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->once()
+            ->mock();
+
+        $this->checkPhpMessDetectionPreCommitExecutor = new CheckPhpMessDetectionPreCommitExecutor(
+            $this->phpMDHandler,
+            $this->preCommitConfig
+        );
+
         $this->checkPhpMessDetectionPreCommitExecutor->run(
             $this->outputInterface,
             array(),
@@ -49,9 +56,20 @@ class CheckPhpMessDetectionPreCommitExecutorTest extends \PHPUnit_Framework_Test
     /**
      * @test
      */
-    public function isEnabled()
+    public function isDisabled()
     {
-        $this->preCommitConfig->setEnabled(true);
+        $this->preCommitConfig->setEnabled(false);
+
+        $this->phpMDHandler = \Mockery::mock(PhpMDHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->never()
+            ->mock();
+
+        $this->checkPhpMessDetectionPreCommitExecutor = new CheckPhpMessDetectionPreCommitExecutor(
+            $this->phpMDHandler,
+            $this->preCommitConfig
+        );
 
         $this->checkPhpMessDetectionPreCommitExecutor->run(
             $this->outputInterface,

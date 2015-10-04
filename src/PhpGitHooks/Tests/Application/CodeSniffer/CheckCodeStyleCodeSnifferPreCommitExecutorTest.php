@@ -24,24 +24,27 @@ class CheckCodeStyleCodeSnifferPreCommitExecutorTest extends \PHPUnit_Framework_
 
     protected function setUp()
     {
-        $this->outputInterface = new InMemoryOutputInterface();
         $this->preCommitConfig = new InMemoryHookConfig();
-        $this->codeSnifferHandler = $this->getMockBuilder('\PhpGitHooks\Infrastructure\CodeSniffer\CodeSnifferHandler')
-            ->setMethods(['run'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->checkCodeStyleCodeSnifferPreCommitExecutor  = new CheckCodeStyleCodeSnifferPreCommitExecutor(
-            $this->preCommitConfig,
-            $this->codeSnifferHandler
-        );
+        $this->outputInterface = new InMemoryOutputInterface();
     }
 
     /**
      * @test
      */
-    public function idDisabled()
+    public function isEnabled()
     {
-        $this->preCommitConfig->setExtraOptions(['enabled' => false, 'standard' => '']);
+        $this->preCommitConfig->setExtraOptions(['enabled' => true, 'standard' => 'PSR2' ]);
+
+        $this->codeSnifferHandler = \Mockery::mock(CodeSnifferHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->once()
+            ->mock();
+
+        $this->checkCodeStyleCodeSnifferPreCommitExecutor  = new CheckCodeStyleCodeSnifferPreCommitExecutor(
+            $this->codeSnifferHandler,
+            $this->preCommitConfig
+        );
 
         $this->checkCodeStyleCodeSnifferPreCommitExecutor->run(
             $this->outputInterface,
@@ -53,9 +56,20 @@ class CheckCodeStyleCodeSnifferPreCommitExecutorTest extends \PHPUnit_Framework_
     /**
      * @test
      */
-    public function isEnabled()
+    public function isDisabled()
     {
-        $this->preCommitConfig->setExtraOptions(['enabled' => true, 'standard' => 'PSR2' ]);
+        $this->preCommitConfig->setExtraOptions(['enabled' => false, 'standard' => '']);
+
+        $this->codeSnifferHandler = \Mockery::mock(CodeSnifferHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->never()
+            ->mock();
+
+        $this->checkCodeStyleCodeSnifferPreCommitExecutor  = new CheckCodeStyleCodeSnifferPreCommitExecutor(
+            $this->codeSnifferHandler,
+            $this->preCommitConfig
+        );
 
         $this->checkCodeStyleCodeSnifferPreCommitExecutor->run(
             $this->outputInterface,

@@ -6,29 +6,24 @@ use PhpGitHooks\Application\JsonLint\CheckJsonSyntaxPreCommitExecutor;
 use PhpGitHooks\Infrastructure\Common\RecursiveToolInterface;
 use PhpGitHooks\Infrastructure\Component\InMemoryOutputInterface;
 use PhpGitHooks\Infrastructure\Config\InMemoryHookConfig;
-use PhpGitHooks\Infrastructure\JsonLint\InMemoryJsonLintHandler;
+use PhpGitHooks\Infrastructure\JsonLint\JsonLintHandler;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckJsonSyntaxPreCommitExecutorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  CheckJsonSyntaxPreCommitExecutor */
     private $checkJsonSyntaxPreCommitExecutor;
-    /** @var  RecursiveToolInterface */
+    /** @var  Mock */
     private $jsonLintHandler;
     /** @var  InMemoryHookConfig */
     private $hookConfig;
     /** @var  OutputInterface */
-    public $output;
+    public $outputInterface;
 
     protected function setUp()
     {
-        $this->jsonLintHandler = new InMemoryJsonLintHandler();
         $this->hookConfig = new InMemoryHookConfig();
-        $this->output = new InMemoryOutputInterface();
-        $this->checkJsonSyntaxPreCommitExecutor = new CheckJsonSyntaxPreCommitExecutor(
-            $this->jsonLintHandler,
-            $this->hookConfig
-        );
+        $this->outputInterface = new InMemoryOutputInterface();
     }
 
     /**
@@ -38,7 +33,18 @@ class CheckJsonSyntaxPreCommitExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->hookConfig->setEnabled(true);
 
-        $this->checkJsonSyntaxPreCommitExecutor->run($this->output, [], 'needle');
+        $this->jsonLintHandler = \Mockery::mock(JsonLintHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->once()
+            ->mock();
+
+        $this->checkJsonSyntaxPreCommitExecutor = new CheckJsonSyntaxPreCommitExecutor(
+            $this->jsonLintHandler,
+            $this->hookConfig
+        );
+
+        $this->checkJsonSyntaxPreCommitExecutor->run($this->outputInterface, [], 'needle');
     }
 
     /**
@@ -47,6 +53,18 @@ class CheckJsonSyntaxPreCommitExecutorTest extends \PHPUnit_Framework_TestCase
     public function isDisabled()
     {
         $this->hookConfig->setEnabled(false);
-        $this->checkJsonSyntaxPreCommitExecutor->run($this->output, [], 'needle');
+
+        $this->jsonLintHandler = \Mockery::mock(JsonLintHandler::class)
+            ->shouldIgnoreMissing()
+            ->shouldReceive('run')
+            ->never()
+            ->mock();
+
+        $this->checkJsonSyntaxPreCommitExecutor = new CheckJsonSyntaxPreCommitExecutor(
+            $this->jsonLintHandler,
+            $this->hookConfig
+        );
+
+        $this->checkJsonSyntaxPreCommitExecutor->run($this->outputInterface, [], 'needle');
     }
 }
