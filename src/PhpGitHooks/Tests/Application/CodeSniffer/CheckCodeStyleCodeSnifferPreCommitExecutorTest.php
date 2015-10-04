@@ -7,6 +7,7 @@ use PhpGitHooks\Application\CodeSniffer\CheckCodeStyleCodeSnifferPreCommitExecut
 use PhpGitHooks\Infrastructure\CodeSniffer\CodeSnifferHandler;
 use PhpGitHooks\Infrastructure\Component\InMemoryOutputInterface;
 use PhpGitHooks\Infrastructure\Config\InMemoryHookConfig;
+use PhpGitHooks\Infrastructure\Git\BaseFiles;
 
 /**
  * Class CheckCodeStyleCodeSnifferPreCommitExecutorTest.
@@ -26,6 +27,8 @@ class CheckCodeStyleCodeSnifferPreCommitExecutorTest extends \PHPUnit_Framework_
     {
         $this->preCommitConfig = new InMemoryHookConfig();
         $this->outputInterface = new InMemoryOutputInterface();
+        $this->files = \Mockery::mock(BaseFiles::class)
+            ->shouldIgnoreMissing();
     }
 
     /**
@@ -48,7 +51,7 @@ class CheckCodeStyleCodeSnifferPreCommitExecutorTest extends \PHPUnit_Framework_
 
         $this->checkCodeStyleCodeSnifferPreCommitExecutor->run(
             $this->outputInterface,
-            array(),
+            $this->files,
             'neddle'
         );
     }
@@ -73,7 +76,7 @@ class CheckCodeStyleCodeSnifferPreCommitExecutorTest extends \PHPUnit_Framework_
 
         $this->checkCodeStyleCodeSnifferPreCommitExecutor->run(
             $this->outputInterface,
-            array(),
+            $this->files,
             'neddle'
         );
     }

@@ -4,6 +4,7 @@ namespace PhpGitHooks\Infrastructure\CodeSniffer;
 
 use PhpGitHooks\Command\BadJobLogo;
 use PhpGitHooks\Infrastructure\Common\ToolHandler;
+use PhpGitHooks\Infrastructure\Git\FilesInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -15,7 +16,7 @@ class CodeSnifferHandler extends ToolHandler
     /** @var array */
     private $files;
     /** @var string */
-    private $neddle;
+    private $needle;
     /** @var string */
     private $standard = 'PSR2';
 
@@ -27,12 +28,18 @@ class CodeSnifferHandler extends ToolHandler
         $this->outputHandler->setTitle('Checking code style with PHPCS');
         $this->output->write($this->outputHandler->getTitle());
 
-        foreach ($this->files as $file) {
-            if (!preg_match($this->neddle, $file)) {
+        if (!isset($this->files)) {
+            return;
+        }
+
+        foreach ($this->files->getFiles() as $file) {
+            if (!preg_match($this->needle, $file)) {
                 continue;
             }
 
-            $processBuilder = new ProcessBuilder(array('php', 'bin/phpcs', '--standard='.$this->standard, $file));
+            $processBuilder = new ProcessBuilder(array(
+                'php', 'bin/phpcs', '--standard='.$this->standard, $file
+            ));
             /** @var Process $phpCs */
             $phpCs = $processBuilder->getProcess();
             $phpCs->run();
@@ -50,17 +57,17 @@ class CodeSnifferHandler extends ToolHandler
     }
 
     /**
-     * @param string $neddle
+     * @param string $needle
      */
-    public function setNeddle($neddle)
+    public function setNeedle($needle)
     {
-        $this->neddle = $neddle;
+        $this->needle = $needle;
     }
 
     /**
-     * @param array $files
+     * @param FilesInterface $files
      */
-    public function setFiles($files)
+    public function setFiles(FilesInterface $files)
     {
         $this->files = $files;
     }

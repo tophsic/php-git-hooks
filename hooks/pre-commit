@@ -3,7 +3,10 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use PhpGitHooks\Command\QualityCodeTool;
+use PhpGitHooks\Container;
 
-$console = new QualityCodeTool();
-$console->run();
+$container = new Container();
+
+$tool = $container->get('tool.pre-commit');
+$tool->setContainer($container);
+$tool->run();

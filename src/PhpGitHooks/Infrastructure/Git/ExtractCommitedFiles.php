@@ -5,14 +5,29 @@ namespace PhpGitHooks\Infrastructure\Git;
 /**
  * Class ExtractCommitedFiles.
  */
-class ExtractCommitedFiles
+class ExtractCommitedFiles implements FilesExtractorInterface
 {
     /** @var array */
     private $output = array();
+    /** @var array */
+    private $files = array();
+    /** @var string */
+    private $gitRef = null;
     /** @var int */
     private $rc = 0;
 
-    private function execute()
+    /**
+     * @see FilesExtractorInterface::__construct
+     */
+    public function __construct(FilesInterface $files)
+    {
+        $this->files = $files;
+    }
+
+    /**
+     * @see FilesExtractorInterface::extract
+     */
+    public function extract()
     {
         exec('git rev-parse --verify HEAD 2> /dev/null', $this->output, $this->rc);
 
@@ -21,16 +36,29 @@ class ExtractCommitedFiles
             $against = 'HEAD';
         }
 
-        exec("git diff-index --cached --name-status $against | egrep '^(A|M)' | awk '{print $2;}'", $this->output);
+        exec("git diff-index --cached --name-status $against | egrep '^(A|M)' | awk '{print $2;}'", $this->output, $this->rc);
+
+        if (0 !== $this->rc) {
+            throw new \RuntimeException(sprintf('Extracting commited files exit with %i status', $this->rc));
+        }
+
+        $this->files->setRef($this->output[0]);
+        $this->files->setFiles(array_slice($this->output, 1));
+
+        return $this->files;
     }
 
-    /**
-     * @return array
-     */
-    public function getFiles()
+    public function getTmpFile($file)
     {
-        $this->execute();
+        $tmpFile = tempnam(sys_get_temp_dir(), 'tmp-php-git-hooks-filename');
+        exec("git show $this->gitRef:$file > $tmpFile", $this->output, $this->rc);
 
-        return $this->output;
+        if (0 !== $this->rc) {
+            throw new \RuntimeException(sprintf(
+                'Extracting commited file from rev %s exit with %i status', $this->gitRef, $this->rc
+            ));
+        }
+
+        return $tmpFile;
     }
 }

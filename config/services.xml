@@ -4,6 +4,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <service id="tool.pre-commit" class="PhpGitHooks\Command\QualityCodeTool">
+            <call method="setFilesExtractor">
+                <argument type="service" id="git.extractor.pre-commit" />
+            </call>
+        </service>
+        <service id="git.extractor.pre-commit" class="PhpGitHooks\Infrastructure\Git\ExtractCommitedFiles">
+            <argument type="service" id="git.files.base"/>
+        </service>
+        <service id="git.files.base" class="PhpGitHooks\Infrastructure\Git\BaseFiles">
+        </service>
         <service id="configurator.processor" class="PhpGitHooks\Infrastructure\Composer\ConfiguratorProcessor">
             <argument type="service" id="config.file.reader"/>
             <argument type="service" id="pre.commit.processor"/>
