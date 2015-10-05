@@ -19,4 +19,22 @@ if (
 
 define('PHPGITHOOKS_BIN_DIR', $binDir);
 
-require __DIR__ . '/../../../../vendor/autoload.php';
+$autoloadFiles = array(
+    __DIR__ . '/../../../../vendor/autoload.php',
+    __DIR__ . '/../vendor/autoload.php'
+);
+$autoloadLoaded = false;
+
+foreach ($autoloadFiles as $file) {
+    if (file_exists($file)) {
+        require $file;
+        $autoloadLoaded = true;
+        break;
+    }
+}
+
+if (false === $autoloadLoaded) {
+    throw new \RuntimeException('Composer autoload not found, you can submit an issue and blame @tophsic ;), see PR #30');
+}
+
+require $file;
