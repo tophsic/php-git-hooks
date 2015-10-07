@@ -6,19 +6,26 @@ $bootsrapFiles = array(
     __DIR__ . '/../../vendor/bruli/php-git-hooks/hooks/bootstrap.php',
     __DIR__ . '/../../hooks/bootstrap.php'
 );
-$bootstrapLoaded = false;
 
 foreach ($bootsrapFiles as $file) {
     if (file_exists($file)) {
-        require $file;
-        $bootstrapLoaded = true;
+        define('PHPGITHOOKS_BOOTSTRAP', $file);
         break;
     }
 }
 
-if (false === $bootstrapLoaded) {
-    throw new \RuntimeException('Bootstrap not found, you can submit an issue and blame @tophsic ;), see PR #30');
+unset($bootsrapFiles, $file);
+
+if (false === defined('PHPGITHOOKS_BOOTSTRAP')) {
+    fwrite(
+        STDERR,
+        'Bootstrap not found, you can submit an issue and blame @tophsic ;), see PR #30'
+    );
+
+    die(1);
 }
+
+require PHPGITHOOKS_BOOTSTRAP;
 
 use PhpGitHooks\Command\QualityMessageTool;
 

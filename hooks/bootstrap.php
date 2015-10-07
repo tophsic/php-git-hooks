@@ -23,18 +23,24 @@ $autoloadFiles = array(
     __DIR__ . '/../../../../vendor/autoload.php',
     __DIR__ . '/../vendor/autoload.php'
 );
-$autoloadLoaded = false;
 
 foreach ($autoloadFiles as $file) {
     if (file_exists($file)) {
+        define('PHPGITHOOKS_COMPOSER_INSTALL', $file);
         require $file;
-        $autoloadLoaded = true;
         break;
     }
 }
 
-if (false === $autoloadLoaded) {
-    throw new \RuntimeException('Composer autoload not found, you can submit an issue and blame @tophsic ;), see PR #30');
+unset($binDir, $home, $autoloadFiles, $file);
+
+if (false === defined('PHPGITHOOKS_COMPOSER_INSTALL')) {
+    fwrite(
+        STDERR,
+        'Composer autoload not found, you can submit an issue and blame @tophsic ;), see PR #30'
+    );
+
+    die(1);
 }
 
-require $file;
+require PHPGITHOOKS_COMPOSER_INSTALL;
